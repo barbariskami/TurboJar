@@ -9,6 +9,7 @@ size = width, height = 1000, 650
 main_screen = pygame.display.set_mode(size)
 
 running = True
+print('')
 
 process_mode = 'game'
 # В игре 4 режима:
