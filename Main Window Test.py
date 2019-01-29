@@ -1,7 +1,7 @@
 import pygame
 import json
 from pygame.sprite import Sprite, Group
-from SpritesCollection.MainGameplayClasses import Jar, Background, Bomb
+from SpritesCollection.MainGameplayClasses import Jar, Background, Bomb, BombSymbol, MoneySymbol
 from SpritesCollection.MenuClasses import StartButton, InfoButton, ShopButton, MenuJar
 from Functions import transform_number
 
@@ -23,6 +23,15 @@ start_btn = None
 info_btn = None
 shop_btn = None
 money_sprites = None
+gameplay_score_counter = None
+gameplay_bombs_counter = None
+gameplay_money_counter = None
+gameplay_score = None
+gameplay_bombs_number = None
+gameplay_bomb_symbol = None
+gameplay_money = None
+gameplay_money_symbol = None
+gameplay_health = None
 
 process_mode = 'menu'
 
@@ -36,6 +45,9 @@ process_mode = 'menu'
 
 def start_gameplay():
     global all_sprites, background, jar, process_mode, bombs, bomb_type
+    global gameplay_score_counter, gameplay_bombs_counter, gameplay_money_counter, gameplay_health_group
+    global gameplay_score, gameplay_bombs_number, gameplay_bomb_symbol, gameplay_money
+    global gameplay_money_symbol, gameplay_health
 
     process_mode = 'game'
 
@@ -45,11 +57,33 @@ def start_gameplay():
     all_sprites.add(background)
     jar = Jar(1)
     all_sprites.add(jar)
-    all_sprites.draw(main_screen)
-    pygame.display.flip()
 
     bombs = Group()
     bomb_type = 'apple'
+
+    gameplay_score = 0
+    gameplay_score_counter = Group()
+    transform_number(gameplay_score, gameplay_score_counter, (3, 3))
+    gameplay_score_counter.draw(main_screen)
+
+    gameplay_bombs_number = 25
+    gameplay_bomb_symbol = BombSymbol()
+    all_sprites.add(gameplay_bomb_symbol)
+    gameplay_bombs_counter = Group()
+    transform_number(gameplay_bombs_number, gameplay_bombs_counter, (200, 3))
+    gameplay_bombs_counter.draw(main_screen)
+
+    gameplay_money = 0
+    gameplay_money_symbol = MoneySymbol()
+    all_sprites.add(gameplay_money_symbol)
+    gameplay_money_counter = Group()
+    transform_number(gameplay_money, gameplay_money_counter, (360, 3))
+    gameplay_score_counter.draw(main_screen)
+
+    gameplay_health = Group()
+
+    all_sprites.draw(main_screen)
+    pygame.display.flip()
 
 
 def start_menumode():
@@ -70,7 +104,6 @@ def start_menumode():
     all_sprites.add(info_btn)
     all_sprites.add(shop_btn)
     all_sprites.add(jar)
-    all_sprites.draw(main_screen)
 
     money_sprites = Group()
     transform_number(data['money'], money_sprites, (90, 20))
@@ -81,6 +114,15 @@ def start_menumode():
     transform_number(data['high score'], high_score_sprites, (x, 20))
     high_score_sprites.draw(main_screen)
 
+    high_score = Sprite()
+    high_score.image = pygame.image.load('data/Images/menu/high_score.png')
+    high_score.mask = pygame.mask.from_surface(high_score.image)
+    high_score.rect = high_score.image.get_rect()
+    high_score.mask = pygame.mask.from_surface(high_score.image)
+    high_score.rect.x = 760 - 25 * (len(str(data['high score'])) - 1)
+    high_score.rect.y = 20
+    all_sprites.add(high_score)
+    all_sprites.draw(main_screen)
 
 
 def start_info():
@@ -97,16 +139,28 @@ while running:
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_SPACE and gameplay_bombs_number > 0:
                     bombs.add(Bomb(jar.rect.y, bomb_type))
+                    gameplay_bombs_number -= 1
+                    gameplay_bombs_counter.empty()
+                    transform_number(gameplay_bombs_number, gameplay_bombs_counter, (200, 3))
         buttons = pygame.key.get_pressed()
         buttons = [buttons[i] for i in (273, 274, 32, 304)]
-        time = clock.tick() / 100
+        time = clock.tick() / 1000
         background.update(time)
         jar.update(buttons, time)
         bombs.update(time)
         all_sprites.draw(main_screen)
         bombs.draw(main_screen)
+
+        gameplay_score += time * 300
+        gameplay_score_counter.empty()
+        transform_number(int(gameplay_score), gameplay_score_counter, (3, 3))
+        gameplay_score_counter.draw(main_screen)
+
+        gameplay_bombs_counter.draw(main_screen)
+
+        gameplay_money_counter.draw(main_screen)
 
         pygame.display.flip()
 
