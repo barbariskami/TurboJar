@@ -2,6 +2,7 @@ import pygame
 import json
 from pygame.sprite import Sprite, Group
 from SpritesCollection.MainGameplayClasses import Jar, Background, Bomb, BombSymbol, MoneySymbol
+from SpritesCollection.MainGameplayClasses import HealthGroup
 from SpritesCollection.MenuClasses import StartButton, InfoButton, ShopButton, MenuJar
 from Functions import transform_number
 
@@ -80,7 +81,8 @@ def start_gameplay():
     transform_number(gameplay_money, gameplay_money_counter, (360, 3))
     gameplay_score_counter.draw(main_screen)
 
-    gameplay_health = Group()
+    gameplay_health = HealthGroup()
+    gameplay_health.draw(main_screen)
 
     all_sprites.draw(main_screen)
     pygame.display.flip()
@@ -153,7 +155,7 @@ while running:
         all_sprites.draw(main_screen)
         bombs.draw(main_screen)
 
-        gameplay_score += time * 300
+        gameplay_score += time * 100
         gameplay_score_counter.empty()
         transform_number(int(gameplay_score), gameplay_score_counter, (3, 3))
         gameplay_score_counter.draw(main_screen)
@@ -161,6 +163,8 @@ while running:
         gameplay_bombs_counter.draw(main_screen)
 
         gameplay_money_counter.draw(main_screen)
+
+        gameplay_health.draw(main_screen)
 
         pygame.display.flip()
 
