@@ -51,8 +51,22 @@ class MenuJar(Sprite):
     def __init__(self):
         super().__init__()
         self.image = pygame.image.load('data/Images/menu/fon_jar.png')
-        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
         self.rect.x = 40
         self.rect.y = 330
+
+
+class Info_to_menu_btn(Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load('data/images/info_stuff/menu_button.png')
+        self.rect = self.image.get_rect()
+        self.rect.x = 680
+        self.rect.y = 470
+
+    def update(self, sprite):
+        if pygame.sprite.spritecollideany(self, sprite):
+            return 'menu'
+        else:
+            return 'info'

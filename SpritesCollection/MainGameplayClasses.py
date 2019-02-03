@@ -82,3 +82,47 @@ class MoneySymbol(pygame.sprite.Sprite):
         self.rect.x = 300
         self.rect.y = 3
 
+class HealthGroup(pygame.sprite.Group):
+    def __init__(self):
+        super().__init__()
+        self.health = 316
+
+        white_scale = pygame.sprite.Sprite()
+        image1 = pygame.Surface([318, 45])
+        image1.fill(pygame.Color("white"))
+        white_scale.image = image1
+        white_scale.rect = white_scale.image.get_rect()
+        white_scale.rect.x = 565
+        white_scale.rect.y = 5
+        self.add(white_scale)
+
+        self.pink_scale = pygame.sprite.Sprite()
+        image1 = pygame.Surface([318, 45])
+        image1.fill(pygame.Color(172, 90, 130))
+        self.pink_scale.image = image1
+        self.pink_scale.rect = self.pink_scale.image.get_rect()
+        self.pink_scale.rect.x = 565
+        self.pink_scale.rect.y = 5
+        self.add(self.pink_scale)
+
+        main_scale = pygame.sprite.Sprite()
+        main_scale.image = pygame.image.load('data/Images/gameplay_stuff/scale_.png')
+        main_scale.rect = main_scale.image.get_rect()
+        main_scale.mask = pygame.mask.from_surface(main_scale.image)
+        main_scale.rect.x = 500
+        main_scale.rect.y = 3
+        self.add(main_scale)
+
+class PauseBtn(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load('data/Images/gameplay_stuff/pause.png')
+        self.rect = self.image.get_rect()
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect.x = 935
+        self.rect.y = 585
+
+    def update(self, sprite):
+        if pygame.sprite.spritecollideany(self, sprite):
+            return 'pause'
+
