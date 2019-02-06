@@ -69,7 +69,7 @@ class BombSymbol(pygame.sprite.Sprite):
         self.image = pygame.image.load('data/Images/gameplay_stuff/apple symbol.png')
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect.x = 140
+        self.rect.x = 150
         self.rect.y = 3
 
 
@@ -79,8 +79,9 @@ class MoneySymbol(pygame.sprite.Sprite):
         self.image = pygame.image.load('data/Images/gameplay_stuff/money symbol.png')
         self.rect = self.image.get_rect()
         self.mask = pygame.mask.from_surface(self.image)
-        self.rect.x = 300
+        self.rect.x = 310
         self.rect.y = 3
+
 
 class HealthGroup(pygame.sprite.Group):
     def __init__(self):
@@ -92,7 +93,7 @@ class HealthGroup(pygame.sprite.Group):
         image1.fill(pygame.Color("white"))
         white_scale.image = image1
         white_scale.rect = white_scale.image.get_rect()
-        white_scale.rect.x = 565
+        white_scale.rect.x = 575
         white_scale.rect.y = 5
         self.add(white_scale)
 
@@ -101,7 +102,7 @@ class HealthGroup(pygame.sprite.Group):
         image1.fill(pygame.Color(172, 90, 130))
         self.pink_scale.image = image1
         self.pink_scale.rect = self.pink_scale.image.get_rect()
-        self.pink_scale.rect.x = 565
+        self.pink_scale.rect.x = 575
         self.pink_scale.rect.y = 5
         self.add(self.pink_scale)
 
@@ -109,9 +110,22 @@ class HealthGroup(pygame.sprite.Group):
         main_scale.image = pygame.image.load('data/Images/gameplay_stuff/scale_.png')
         main_scale.rect = main_scale.image.get_rect()
         main_scale.mask = pygame.mask.from_surface(main_scale.image)
-        main_scale.rect.x = 500
+        main_scale.rect.x = 510
         main_scale.rect.y = 3
         self.add(main_scale)
+
+    def update(self, difference):
+        if difference >= self.pink_scale.rect.width:
+            return 'result'
+
+        image = pygame.Surface([self.pink_scale.rect.width - difference, 45])
+        image.fill(pygame.Color(172, 90, 130))
+        self.pink_scale.image = image
+        self.pink_scale.rect = self.pink_scale.image.get_rect()
+        self.pink_scale.rect = self.pink_scale.image.get_rect()
+        self.pink_scale.rect.x = 575
+        self.pink_scale.rect.y = 5
+
 
 class PauseBtn(pygame.sprite.Sprite):
     def __init__(self):
