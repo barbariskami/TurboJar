@@ -3,7 +3,7 @@ import json
 import random
 from pygame.sprite import Sprite, Group
 from SpritesCollection.MainGameplayClasses import Jar, Background, Bomb, BombSymbol, MoneySymbol
-from SpritesCollection.MainGameplayClasses import HealthGroup, PauseBtn
+from SpritesCollection.MainGameplayClasses import HealthGroup, PauseBtn, Boom
 from SpritesCollection.MenuClasses import StartButton, InfoButton, ShopButton, MenuJar, Info_to_menu_btn
 from SpritesCollection.PauseClasses import PauseWindow, ContinueBtn, RestartBtn, FromPauseToMenuBtn
 from SpritesCollection.EnemyClasses import Enemy
@@ -48,6 +48,7 @@ gameplay_enemies = None
 gameplay_time = None
 gameplay_enemies_period = None
 gameplay_wall = None
+gameplay_clouds = None
 
 info_menu_btn = None
 
@@ -68,6 +69,10 @@ resultmode_bonus = None
 # В игре 5 режимов: menu, game, pause, result, info
 process_mode = 'menu'
 
+boom = pygame.mixer.Sound('data/Music/Boom.wav')
+boom.set_volume(0.3)
+finish = pygame.mixer.Sound('data/Music/Finish.wav')
+background_music_playing = False
 
 def transform_number(number, group, start_cords):
     number = str(number)
@@ -89,7 +94,7 @@ def start_gameplay():
     global gameplay_score_counter, gameplay_bombs_counter, gameplay_money_counter, gameplay_health_group
     global gameplay_score, gameplay_bombs_number, gameplay_bomb_symbol, gameplay_money
     global gameplay_money_symbol, gameplay_health, gameplay_pause, clock, gameplay_enemies
-    global gameplay_enemies_period, gameplay_wall
+    global gameplay_enemies_period, gameplay_wall, background_music_playing, gameplay_clouds
     process_mode = 'game'
 
     all_sprites = Group()
@@ -138,14 +143,20 @@ def start_gameplay():
     gameplay_enemies = Group()
 
     gameplay_time = 0
-    gameplay_enemies_period = 3
+    gameplay_enemies_period = 1.5
 
     pygame.display.flip()
+
+    pygame.mixer.music.load('data/Music/The Ride of the Valkyries.mp3')
+    pygame.mixer.music.play(-1)
+    background_music_playing = False
+
+    gameplay_clouds = Group()
 
 
 def start_menumode():
     global fon, menumode_start_btn, menumode_info_btn, menumode_shop_btn, jar, all_sprites, process_mode, menumode_money_sprites
-    global menumode_high_score_sprites
+    global menumode_high_score_sprites, background_music_playing
 
     process_mode = 'menu'
 
@@ -183,6 +194,11 @@ def start_menumode():
     all_sprites.draw(main_screen)
 
     pygame.display.flip()
+
+    if not background_music_playing:
+        pygame.mixer.music.load('data/Music/Background.mp3')
+        pygame.mixer.music.play(-1)
+        background_music_playing = True
 
 
 def start_info():
@@ -227,7 +243,10 @@ def start_pausemode():
 
 def start_resultmode(result, money):
     global all_sprites, resultmode_fon, resultmode_money_group, resultmode_score_group, resultmode_total_group
-    global resultmode_menu_button, resultmode_return_button, resultmode_bonus
+    global resultmode_menu_button, resultmode_return_button, resultmode_bonus, finish
+
+    pygame.mixer.music.stop()
+    finish.play()
 
     all_sprites = Group()
 
@@ -326,15 +345,21 @@ while running:
             gameplay_bombs_counter.draw(main_screen)
 
             if pygame.sprite.spritecollide(jar, gameplay_enemies, False):
+                boom.play()
                 collision_enemies = pygame.sprite.spritecollide(jar, gameplay_enemies, True)
                 res = gameplay_health.update(sum([i.collision_damage for i in collision_enemies]))
+                for enemy in collision_enemies:
+                    gameplay_clouds.add(Boom((enemy.rect.x - 100, enemy.rect.y)))
                 if res == 'result':
                     process_mode = res
                     start_resultmode(int(gameplay_score), gameplay_money)
                     continue
             if pygame.sprite.spritecollide(gameplay_wall, gameplay_enemies, False):
+                boom.play()
                 collision_enemies = pygame.sprite.spritecollide(gameplay_wall, gameplay_enemies, True)
                 res = gameplay_health.update(sum([i.missing_damage for i in collision_enemies]))
+                for enemy in collision_enemies:
+                    gameplay_clouds.add(Boom((enemy.rect.x, enemy.rect.y)))
                 if res == 'result':
                     process_mode = res
                     start_resultmode(int(gameplay_score), gameplay_money)
@@ -342,6 +367,7 @@ while running:
 
             if pygame.sprite.groupcollide(gameplay_enemies, bombs, False, False):
                 res = pygame.sprite.groupcollide(gameplay_enemies, bombs, False, True)
+                boom.play()
                 for i in res.keys():
                     if res[i]:
                         i.health -= 100
@@ -355,6 +381,7 @@ while running:
                         gameplay_bombs_number += i.bombs
                         gameplay_bombs_counter.empty()
                         transform_number(gameplay_bombs_number, gameplay_bombs_counter, (200, 3))
+                    gameplay_clouds.add(Boom((i.rect.x - 50, i.rect.y)))
 
             gameplay_time += time
             if gameplay_time >= gameplay_enemies_period:
@@ -367,6 +394,9 @@ while running:
             gameplay_money_counter.draw(main_screen)
 
             gameplay_health.draw(main_screen)
+
+            gameplay_clouds.update()
+            gameplay_clouds.draw(main_screen)
 
             pygame.display.flip()
 

@@ -39,7 +39,7 @@ class Background(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.rect.x = 0
         self.rect.y = 0
-        self.v = 400
+        self.v = 450
         self.xx = 0
 
     def update(self, seconds):
@@ -140,3 +140,19 @@ class PauseBtn(pygame.sprite.Sprite):
         if pygame.sprite.spritecollideany(self, sprite):
             return 'pause'
 
+
+class Boom(pygame.sprite.Sprite):
+    def __init__(self, cords):
+        super().__init__()
+        self.frames = [pygame.image.load('data/Images/gameplay_stuff/cloud/cloud' + str(i) + '.png') for i in range(1, 6)]
+        self.image = self.frames[0]
+        self.rect = self.image.get_rect()
+        self.rect.x = cords[0]
+        self.rect.y = cords[1]
+        self.frame_counter = 0
+
+    def update(self):
+        self.frame_counter += 1
+        self.image = self.frames[self.frame_counter // 3]
+        if self.frame_counter >= 14:
+            self.kill()
