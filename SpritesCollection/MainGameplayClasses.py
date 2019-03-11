@@ -144,7 +144,8 @@ class PauseBtn(pygame.sprite.Sprite):
 class Boom(pygame.sprite.Sprite):
     def __init__(self, cords):
         super().__init__()
-        self.frames = [pygame.image.load('data/Images/gameplay_stuff/cloud/cloud' + str(i) + '.png') for i in range(1, 6)]
+        self.frames = [pygame.image.load('data/Images/gameplay_stuff/cloud/cloud' + str(i) + '.png') for i in
+                       range(1, 6)]
         self.image = self.frames[0]
         self.rect = self.image.get_rect()
         self.rect.x = cords[0]
