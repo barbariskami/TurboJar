@@ -1,8 +1,8 @@
 from pygame import *
-init() # this is pygame.init()
+init()  # this is pygame.init()
 running = True
 while running:
-    display.set_mode((800,600))
+    display.set_mode((800, 600))
     visible = True
     textFont = font.Font(None, 70)
     while visible:

@@ -59,6 +59,8 @@ class Bomb(pygame.sprite.Sprite):
         self.xx = 100
 
     def update(self, seconds):
+        if self.rect.x > 1000:
+            self.kill()
         self.xx += seconds * self.v
         self.rect.x = int(self.xx)
 

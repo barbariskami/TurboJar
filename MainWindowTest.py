@@ -23,8 +23,8 @@ size = width, height = 1000, 650
 main_screen = pygame.display.set_mode(size)
 running = True
 
-# font = 'BELLABOO.ttf'
 font = None
+#font = 'BELLABOO.ttf'
 font_color = (172, 90, 130)
 
 all_sprites = None
@@ -144,7 +144,7 @@ def start_gameplay():
     transform_number(gameplay_score, gameplay_score_counter, (3, 3))
     gameplay_score_counter.draw(main_screen)
 
-    gameplay_bombs_number = 25
+    gameplay_bombs_number = 500
     gameplay_bomb_symbol = BombSymbol()
     all_sprites.add(gameplay_bomb_symbol)
     gameplay_bombs_counter = Group()
@@ -213,7 +213,6 @@ def start_menumode():
     all_sprites.add(jar)
 
     menumode_font = pygame.font.Font(font, 66)
-    print(menumode_font.size('1'))
 
     menumode_money = menumode_font.render(str(data['money']), 0, font_color)
     main_screen.blit(menumode_money, (90, 20))
@@ -408,6 +407,10 @@ def generate_enemy():
     enemy = Enemy.generate(position)
     gameplay_enemies.add(enemy)
 
+def check_apples(group):
+    for i in group:
+        pass
+
 
 start_menumode()
 pygame.display.flip()
@@ -456,6 +459,7 @@ while running:
                 res = gameplay_health.update(sum([i.collision_damage for i in collision_enemies]))
                 for enemy in collision_enemies:
                     gameplay_clouds.add(Boom((enemy.rect.x - 100, enemy.rect.y)))
+                    enemy.kill()
                 if res == 'result':
                     process_mode = res
                     start_resultmode(int(gameplay_score), gameplay_money)
@@ -466,6 +470,7 @@ while running:
                 res = gameplay_health.update(sum([i.missing_damage for i in collision_enemies]))
                 for enemy in collision_enemies:
                     gameplay_clouds.add(Boom((enemy.rect.x, enemy.rect.y)))
+                    enemy.kill()
                 if res == 'result':
                     process_mode = res
                     start_resultmode(int(gameplay_score), gameplay_money)
